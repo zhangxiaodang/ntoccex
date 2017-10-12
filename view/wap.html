@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" ng-app="MainApp">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>峰松无车承运商城</title>
+    <link rel="stylesheet" type="text/css" href="../static/wap/front.css">
+    <link rel="stylesheet" href="../static/wap/swiper.min.css">
+    <link rel="stylesheet" href="../static/wap/iconfont.css">
+    <link rel="stylesheet" href="../static/wap/phone.css">
+    <style type="text/css">
+        .shop_image{height:45px;width:45px;position:absolute;left:20px;top:-13px;z-index:1;border-radius:50px;}
+        .mername{font-size:14px;color:#333;height: 30px;line-height: 27px;}
+        .paymark_image{width:60px;height:25px;}
+        .go_shop_btn{float:right;}
+        .one_product{text-align:center;margin-left:50%;}
+        .one_product_default{text-align:center;margin-left:0%;height:0;padding-top:50%;}
+        .product_section{height:0;padding-top:38%;}
+        .prduct_img{width:80%;height:85%;margin-top:1%;}
+        .product_name{padding:0px 5px 0 5px;}
+        .myBanner{width:100%;height:0;padding-top:35%;background:#ddd;position:relative;
+        	overflow:hidden;}
+        .swiper-wrapper{position:absolute;left:0;top:0;}
+        .swiper-slide{background-size:100% 100%;}
+        .swiper-button-next,.swiper-button-prev{opacity:0.5;}
+        .swiper-button-disabled{opacity:0.1 !important;}
+        .banner4{background-image:url("../static/wap/fs.png")}
+        .yl_pay{width:100%;}
+        .copyright-text{width:100%;font-size:14px;color:#444;text-align:center;}
+        .remark-mask{width: 100%;height: 100%;background: rgba(0,0,0,0.5);z-index: 1000;
+        	position: fixed;left:0;top:0;display:none;}
+        .remark-tip{width:70%;height:150px;position:absolute;top:30%;left:15%;padding:15px;
+        	background:#FFF;border-radius:5px;}
+        .remark-inp{width:100%;height:30px;border:none;border-bottom:1px solid #999;
+        	margin:15px 0 5px 0;font-size:14px;}
+        .remark-footer{margin-top:10px;}
+        .remark-btn{display:inline-block;float:right;height:20px;line-height:20px;font-size:18px;
+        	padding-left:10px;}
+        .remark-enter{color:#3FDCA7;}
+    </style>
+</head>
+<body>
+    <div class="myBanner swiper-container-horizontal">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide banner4 swiper-slide-active" style="width: 375px; margin-right: 30px;"></div>
+        </div>
+        
+    </div>
+    <div style="position:relative;">
+        <img class="shop_image" src="../static/wap/shop.png">
+        <div style="padding:3px 10px 0 70px;">
+            <section_box>
+                <section75 class="mername ellipsis" style="padding-left: 15%;">泰安峰松电子科技有限公司</section75>
+            </section_box>
+        </div>
+    </div>
+
+    <section_box style="padding:5px 5px 0 5px;">
+        <section50 class="one_product_default">
+            <div class="square">
+                <img class="prduct_img" src="../static/wap/goods.png">
+                <div class="product_name ellipsis">峰松柴油卡</div>
+            </div>
+        </section50>
+    </section_box>
+    <div style="background:#fff;">
+        <div class="wrap" style="position:relative;padding-top:5px;" />
+        <div class="wrap" style="padding-top:5px;position:relative;">
+            <div class="red_color1" style="position:absolute;left:19px;line-height:35px;font-size:22px;">¥</div>
+            <input class="my_input" placeholder="输入金额直接结账" type="number" id="money" name="money" style="width:100%;padding-left:23px;">
+            <input type="hidden" id="amount" name="amount">
+        </div>
+        <div class="wrap" style="padding-top:5px;position:relative;">
+            <input class="my_input" placeholder="输入手机号" type="number" id="phone" name="phone" style="width:100%;padding-left:23px;">
+        </div>
+
+        <section_box style="text-align:center;padding:10px;font-size:14px;">
+            <section50 style="padding-right:10px;">
+                <div class="my_btn blue_bg1 yl_pay" style="padding:5px 0;">
+                    <div class="ellipsis" style="display:inline-block;padding-left:45px;position:relative;height:23px;line-height:23px;">
+                        <img src="../static/wap/yl.png" style="width:38px;height:20px;position:absolute;left:0;top:2px;">
+                        银联支付
+                    </div>
+                </div>
+            </section50>
+        </section_box>
+        </div>
+
+        <div style="padding-bottom: 10px;">
+            <p class="copyright-text">鲁ICP备17037673号-1</p>
+        </div>
+    </div>
+
+    <div class="loading-block hide">
+        <div class="overlay"></div>
+        <p style="position:absolute;top:30%;color:#FFFFFF;z-index:9999;left:0;right:0;text-align:center"><i class="logobg"></i></p>
+        <p style="position:absolute;top:45%;color:#FFFFFF;z-index:9999;left:0;right:0;text-align:center"><i class="quan"></i>加载中，请稍候</p>
+    </div>
+
+    <script src="../static/wap/jquery.min.js"></script>
+    <script src="../static/wap/WebService.js"></script>
+    <script src="../static/wap/swiper.min.js"></script>
+    <script src="../static/wap/myJs.js"></script>
+    <script>
+        var logo_img = "";
+        var banner_img = "";
+        var navigatorType = "";
+
+        //交易按钮可用性判断
+        function judgeNavigator(){
+        	var ua = navigator.userAgent;
+        	if(ua.indexOf("AlipayDefined")>-1){
+        		$(".yl_pay").removeClass("disabled");
+        		navigatorType = "01";
+        		return;
+        	}
+        	if(ua.indexOf("V1_AND_SQ")>-1 || ua.indexOf("V1_IPH_SQ")>-1) {
+        		$(".yl_pay").removeClass("disabled");
+        		navigatorType = "04";
+        		return;
+        	}
+        	if(ua.indexOf("MicroMessenger")>-1) {
+        		$(".yl_pay").removeClass("disabled");
+        		navigatorType = "00";
+        		return;
+        	}
+        	if(ua.indexOf("JDJR-App")>-1) {
+        		$(".yl_pay").removeClass("disabled");
+        		navigatorType = "10";
+        		return;
+        	}
+        	if(ua.indexOf("BaiduWallet")>-1) {
+        		$(".yl_pay").removeClass("disabled");
+        		navigatorType = "11";
+        		return;
+        	}
+        	navigatorType = "99";
+        	$(".yl_pay").removeClass("disabled");
+        }
+        function goIndexPage(paramStr){
+        	var url = prefix+"/jsp/front/shopIndex.jsp";
+        	url = paramStr?(url+paramStr):url;
+        	location.href = url;
+        }
+        function checkMoney(money){
+        	var reg = /^([0]\.\d{1,2})$|^([0-9]\d*)$|^([0-9]\d*\.\d{1,2})$/;
+               if(!reg.test(money)){
+                myAlert("金额输入格式错误");
+                return ;
+               }
+        	if(!money){
+        		myAlert("请输入金额");
+        		return false;
+        	}
+        	if(money-0 == 0){
+        		myAlert("金额不能为0");
+        		return false;
+        	}
+        	if(isNaN(money)){
+        		myAlert("金额输入格式错误，必须为数字！");
+        		return false;
+        	}
+
+        	$("#amount").val(Math.round(money*100*100)/100);
+        	return true;
+        };
+
+        function checkPhone(phone) {
+            var reg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+
+            if(!phone) {
+                myAlert("手机号不能为空!")
+                return false;
+            }
+            if(!reg.test(phone)) {
+                myAlert("请输入有效的手机号码！");
+                return false;
+            }
+            return true;
+        }
+
+        // 银联支付
+        function ylPayHandler(e){
+            if($(e.target).hasClass("disabled")) {
+                return;
+            }
+
+            var money = $("#money").val();
+            if(!checkMoney(money)) return;
+
+            var phone = $("#phone").val();
+            if(!checkPhone(phone)) return;
+
+            var params={};
+            params.money = Math.round(money*100*100)/100;
+            params.phone = phone;
+            var paramsUrl = "/wap/pay";
+            new WebService(params, paramsUrl)
+                .setShowErr(myAlert)
+                .setShowHidder(function(){
+                    $(".yl_pay").addClass("disabled");
+                })
+                .setHideHidder(function(){
+                    $(".yl_pay").removeClass("disabled");
+                })
+                .setShowLoading(function() {
+                    $(".loading-block").removeClass("hide");
+                })
+                .setHideLoading(function() {
+                    $(".loading-block").addClass("hide");
+                })
+                .submit();
+        }
+
+        function appendBanner(img){
+        	$(".swiper-wrapper").append("<div class='swiper-slide' style=\"background-image:url('"+img+"')\"></div>");
+        }
+        function changeSwiper(imgList){
+        	if(swiper) swiper.removeAllSlides();
+        	if(!imgList || !imgList.length || imgList.length == 0) return;
+        	var len = imgList.length;
+        	if(!len) return;
+        	for(var i=0;i<len;i++){
+        		appendBanner(mam_url_pre+imgList[i]);
+        	}
+        	freshBanner();
+        }
+
+        function showProduct($div,product){
+        	if(!product){
+        		$div.hide();
+        		return;
+        	}
+        	$div.find(".product_name").html(product.pro_name);
+        	$div.find(".prduct_img").attr("src",mam_url_pre+product.pro_imagebig);
+        	if(product.mer_id != "999451050940001") return;
+        	//if('') return;
+        	if("0" == "1"){
+        		$div.click(function(){
+        			goIndexPage("?pageName=detail&pro_id="+product.pro_id);
+        		});
+        	}
+        }
+        function showProductList(list){
+        	if(!list||list.length == 0) return;
+        	var len = list.length;
+        	for(var i=0;i<4;i++){
+        		//判断是否要居中
+        		if(len ==1) {
+        			var $p = $(".product_section").children(":eq(0)").removeClass(".product_section").addClass("one_product");
+        			showProduct($p,list[0]);
+        		}
+        		showProduct($(".product_section:eq("+i+")"),list[i]);
+        	}
+        }
+
+        var swiper = null;
+        function freshBanner(){
+        	swiper = new Swiper('.myBanner', {
+        		pagination: '.swiper-pagination',
+        		nextButton: '.swiper-button-next',
+        		prevButton: '.swiper-button-prev',
+        		autoplay: 4000,
+        		slidesPerView: 1,
+        		paginationClickable: true,
+        		autoplayDisableOnInteraction : false,
+        		spaceBetween: 30
+        	});
+        }
+        var freshShop = function() {
+        	if(!!"{headline=null, bannerImgs=[], commendProductList=[], logo_img=null}") return;
+        	$.post("/xlzf/front/freshShop",null,function(data){
+        		if(!data || data.success != "success"){
+        			myAlert(data.msg);
+        			return;
+        		}
+        		$('title').html(data.headline);
+        		showProductList(data.commendProductList);
+        	},"json");
+        }
+
+        $(function(){
+        	freshBanner();
+        	//提示默认加载信息
+        	if(""){
+        		myAlert("");
+        	}
+        	freshShop();
+        	//浏览器判断
+        	judgeNavigator();
+        	//商店名称处理
+        	$(".yl_pay").click(ylPayHandler);
+        	//商店开通判断
+        	var is_open_flag = "0"=="1";
+        	//商店开通后执行代码段
+        	if(!is_open_flag) return;
+        	$(".go_shop_btn").removeClass("disabled");
+        	//添加分类导航跳转事件
+        	$(".nav_menu").click(function(){
+        		goIndexPage("?category="+$(this).attr("page_name"));
+        	});
+        });
+    </script>
+
+</body>
+</html>
