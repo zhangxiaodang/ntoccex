@@ -3,7 +3,6 @@ import datetime
 from flask import Flask, request, render_template
 from ops.core.rpc import call_jy_reply
 from ops.trans.utils import call_jy_asy
-from utils import checkMobile
 
 app = Flask(__name__, template_folder='view')
 
@@ -12,11 +11,8 @@ app = Flask(__name__, template_folder='view')
 def index():
     # 主页面
     userAgent = request.headers['User-Agent']
-
-    if checkMobile(userAgent):
-        return render_template('wap.html')
-    else:
-        return 'web'
+    print(userAgent)
+    return 'Hello World!'
 
 
 @app.route('/web', methods=['GET', 'POST'])
@@ -80,8 +76,8 @@ def wap_pay():
         #reqdata['biz_type'] = 'WapGwDirectPayment'
         reqdata['biz_type'] = 'GWDirectPay'
         reqdata['client_ip'] = request.remote_addr
-        reqdata['bank_abbr'] = 'CPB2C'
-        #reqdata['bank_abbr'] = 'UNIONB2C'
+        #reqdata['bank_abbr'] = 'CPB2C'
+        reqdata['bank_abbr'] = 'UNIONB2C'
         reqdata['amt'] = page_data['money']
         reqdata['phone'] = page_data['phone']
         reqdata['goods_name'] = 'AA'
@@ -144,6 +140,60 @@ def xlpay_notify():
     call_jy_asy(fsxx.encode('utf-8'))
 
     return json.dumps({'result':'success'})
+
+@app.route('/capli', methods=['POST'])
+def cpali_notify():
+    """
+    # 二维码异步支付通知.
+    """
+    from ops.trans.des3 import decrypt
+    from ops.trans.wlutils import get_3des_key
+    from ops.trans.xmlparse import xml, xmlread
+
+    post_data = request.get_data()[4:].decode('utf-8').replace('%2B', '+')
+    print('接收到的支付通知数据为【%s】' % post_data)
+    # 取得密钥
+    # key = get_3des_key()
+    key = 'd654033778f94d1aa87e7525'
+    # 解密
+    xml_bw = decrypt(post_data.encode('utf-8'), key)
+    print('解密后的报文为【%s】' % xml_bw)
+
+    # 解包
+    root = xml(xml_bw, 'utf-8')
+    # 请求交易的流水号
+    reqid = xmlread(root, 'request/orgreqid')
+    # 商户订单号(回传)
+    orderid = xmlread(root, 'request/orderno')
+    # 付款银行
+    banktype = xmlread(root, 'request/banktype')
+
+    # 组织发送报文
+    buf = {}
+    # 报文头
+    head = {}
+    head['token'] = '000000'
+    head['ptm'] = 'FS000000'
+    head['timestamp'] = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(datetime.datetime.now().microsecond)[:4]
+    head['translsh'] = 'FS000000' + head['timestamp']
+    head['transid'] = '900S0002'
+    # 报文体
+    reqdata = {}
+    # 请求交易的流水号
+    reqdata['zflsh'] = reqid or ''
+    # 商户订单号(回传)
+    reqdata['zfddh'] = orderid or ''
+    # 付款银行
+    reqdata['fkyh'] = banktype or ''
+
+    buf['head'] = head
+    buf['reqdata'] = reqdata
+
+    # 发送交易
+    print('要发送的报文为【%s】' % buf)
+    call_jy_reply('JRZX_S', json.dumps(buf).encode('utf-8'))
+
+    return "msE8iNS78NkANA5APPBBL4q8LiIHICOxxWYviVQRp24osRrx+96BI0p2g5BTpsKlSJ44RjvqEuQb\n4m4zV98rcTlVcRZmsHyT0WhJ9CaQWjuNxrpfRV8G2uSzahcyee5/ZvQv8kXfn8kK8W8XnibXHzDT\n5X1lRPSaPWclps1TOlD+x1FHUzA/LoJ8rPN+FmIrCpcSgwFUm9EzME3beiQNQc6BbLpdZmolbT7B\nsHjvBqIWtWUpjS4QbtkKt6rh+nRP6/TOM9IVnbewk1ZfdXFZgf6erEgz4MSwAGKhGw1SzgOzTUT/\nHPCTCKNG5To1LrPSI21g6PQO/BQNTEocKENTHkSzFjJNCSSfs68UlGdSidCDExLqJyHSv2JAjaaI\nquFNmW9avfI4sJXdPXfPD4ez82YO81kHMcYFXNO67Uom5+bKrf35nwn4WgrxbxeeJtcf6fYeyZ94\npz7hToZMkGHBKCD9V0txtbzx5TyO5by9fVWiXqOVBOeEfl6UeOaOXh2MxMTehkLAX0DiVfFJ8iUz\nasHXoRkoXJ+Mxo/nTSo5bv5hw+DGIuptbkyJZFXMIRVozkJI3k7ORzUWM5xWvj+yzfXeQfxz1GlG\n";
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9999)
