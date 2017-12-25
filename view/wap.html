@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>峰松无车承运商城</title>
+    <title>峰松收款台</title>
     <link rel="stylesheet" type="text/css" href="../static/wap/front.css">
     <link rel="stylesheet" href="../static/wap/swiper.min.css">
     <link rel="stylesheet" href="../static/wap/iconfont.css">
@@ -26,6 +26,8 @@
         .swiper-button-disabled{opacity:0.1 !important;}
         .banner4{background-image:url("../static/wap/fs.png")}
         .yl_pay{width:100%;}
+        .wei_pay{width:100%;}
+        .zfb_pay{width:100%;}
         .copyright-text{width:100%;font-size:14px;color:#444;text-align:center;}
         .remark-mask{width: 100%;height: 100%;background: rgba(0,0,0,0.5);z-index: 1000;
         	position: fixed;left:0;top:0;display:none;}
@@ -59,7 +61,9 @@
         <section50 class="one_product_default">
             <div class="square">
                 <img class="prduct_img" src="../static/wap/goods.png">
+                <!--
                 <div class="product_name ellipsis">峰松柴油卡</div>
+                -->
             </div>
         </section50>
     </section_box>
@@ -80,6 +84,18 @@
                     <div class="ellipsis" style="display:inline-block;padding-left:45px;position:relative;height:23px;line-height:23px;">
                         <img src="../static/wap/yl.png" style="width:38px;height:20px;position:absolute;left:0;top:2px;">
                         银联支付
+                    </div>
+                </div>
+                <div class="my_btn blue_bg1 wei_pay" style="padding:5px 0; margin-top: 10px;">
+                    <div class="ellipsis" style="display:inline-block;padding-left:45px;position:relative;height:23px;line-height:23px;">
+                        <img src="../static/wap/wepay.png" style="width:38px;height:20px;position:absolute;left:0;top:2px;">
+                        微信支付
+                    </div>
+                </div>
+                <div class="my_btn blue_bg1 zfb_pay" style="padding:5px 0; margin-top: 10px;">
+                    <div class="ellipsis" style="display:inline-block;padding-left:45px;position:relative;height:23px;line-height:23px;">
+                        <img src="../static/wap/zfb.png" style="width:38px;height:20px;position:absolute;left:0;top:2px;">
+                        支付宝
                     </div>
                 </div>
             </section50>
@@ -143,17 +159,21 @@
         	location.href = url;
         }
         function checkMoney(money){
+            if (money == "") {
+                myAlert("金额不能为空!");
+                return false;
+            }
         	var reg = /^([0]\.\d{1,2})$|^([0-9]\d*)$|^([0-9]\d*\.\d{1,2})$/;
                if(!reg.test(money)){
-                myAlert("金额输入格式错误");
-                return ;
+                myAlert("金额输入格式错误!");
+                return false;
                }
         	if(!money){
-        		myAlert("请输入金额");
+        		myAlert("请输入金额!");
         		return false;
         	}
         	if(money-0 == 0){
-        		myAlert("金额不能为0");
+        		myAlert("金额不能为0!");
         		return false;
         	}
         	if(isNaN(money)){
@@ -212,18 +232,14 @@
                 .submit();
         }
 
-        function appendBanner(img){
-        	$(".swiper-wrapper").append("<div class='swiper-slide' style=\"background-image:url('"+img+"')\"></div>");
+        // 微信支付
+        function weiPayHandler(e) {
+            myAlert("功能暂未开放!");
         }
-        function changeSwiper(imgList){
-        	if(swiper) swiper.removeAllSlides();
-        	if(!imgList || !imgList.length || imgList.length == 0) return;
-        	var len = imgList.length;
-        	if(!len) return;
-        	for(var i=0;i<len;i++){
-        		appendBanner(mam_url_pre+imgList[i]);
-        	}
-        	freshBanner();
+
+        // 支付宝
+        function zfbPayHandler(e) {
+            myAlert("功能暂未开放!");
         }
 
         function showProduct($div,product){
@@ -290,6 +306,10 @@
         	judgeNavigator();
         	//商店名称处理
         	$(".yl_pay").click(ylPayHandler);
+
+        	$(".wei_pay").click(weiPayHandler);
+        	$(".zfb_pay").click(zfbPayHandler);
+
         	//商店开通判断
         	var is_open_flag = "0"=="1";
         	//商店开通后执行代码段
