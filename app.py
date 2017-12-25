@@ -74,15 +74,16 @@ def wap_pay():
         reqdata = {}
         reqdata['page_return_url'] = 'http://www.ntoccex.com:9999/wap/back'
         #reqdata['biz_type'] = 'WapGwDirectPayment'
-        reqdata['biz_type'] = 'GWDirectPay'
+        #reqdata['biz_type'] = 'GWDirectPay'
         reqdata['client_ip'] = request.remote_addr
         #reqdata['bank_abbr'] = 'CPB2C'
-        reqdata['bank_abbr'] = 'UNIONB2C'
+        #reqdata['bank_abbr'] = 'UNIONB2C'
         reqdata['amt'] = page_data['money']
         reqdata['phone'] = page_data['phone']
         reqdata['goods_name'] = 'AA'
         reqdata['goods_desc'] = 'aa'
         reqdata['valid_num'] = '1'
+        reqdata['callback_url'] = ''
         buf['head'] = head
         buf['reqdata'] = reqdata
 
@@ -194,6 +195,51 @@ def cpali_notify():
     call_jy_reply('JRZX_S', json.dumps(buf).encode('utf-8'))
 
     return "msE8iNS78NkANA5APPBBL4q8LiIHICOxxWYviVQRp24osRrx+96BI0p2g5BTpsKlSJ44RjvqEuQb\n4m4zV98rcTlVcRZmsHyT0WhJ9CaQWjuNxrpfRV8G2uSzahcyee5/ZvQv8kXfn8kK8W8XnibXHzDT\n5X1lRPSaPWclps1TOlD+x1FHUzA/LoJ8rPN+FmIrCpcSgwFUm9EzME3beiQNQc6BbLpdZmolbT7B\nsHjvBqIWtWUpjS4QbtkKt6rh+nRP6/TOM9IVnbewk1ZfdXFZgf6erEgz4MSwAGKhGw1SzgOzTUT/\nHPCTCKNG5To1LrPSI21g6PQO/BQNTEocKENTHkSzFjJNCSSfs68UlGdSidCDExLqJyHSv2JAjaaI\nquFNmW9avfI4sJXdPXfPD4ez82YO81kHMcYFXNO67Uom5+bKrf35nwn4WgrxbxeeJtcf6fYeyZ94\npz7hToZMkGHBKCD9V0txtbzx5TyO5by9fVWiXqOVBOeEfl6UeOaOXh2MxMTehkLAX0DiVfFJ8iUz\nasHXoRkoXJ+Mxo/nTSo5bv5hw+DGIuptbkyJZFXMIRVozkJI3k7ORzUWM5xWvj+yzfXeQfxz1GlG\n";
+
+
+@app.route('/alipay/notify', methods=['POST'])
+def alipay_notify():
+    """
+    # 支付宝异步通知.
+    """
+    alipay_data = request.form.to_dict()
+    print('支付宝异步通知返回的数据为【%s】' % alipay_data)
+
+    # 组织发送报文
+    buf = {}
+    # 报文头
+    head = {}
+    head['token'] = '000000'
+    head['ptm'] = 'FS000000'
+    head['timestamp'] = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(datetime.datetime.now().microsecond)[:4]
+    head['translsh'] = 'FS000000' + head['timestamp']
+    head['transid'] = '005S0002'
+    # 报文体
+    reqdata = {}
+    # 商户订单号
+    reqdata['out_trade_no'] = alipay_data['out_trade_no'] or ''
+    # 支付宝交易流水号
+    reqdata['trade_no'] = alipay_data['trade_no'] or ''
+    # 买家付款的金额
+    reqdata['buyer_pay_amount'] = alipay_data['buyer_pay_amount'] or '0'
+    # 买家支付宝账号
+    reqdata['buyer_logon_id'] = alipay_data['buyer_logon_id'] or ''
+    # 实收金额
+    reqdata['receipt_amount'] = alipay_data['receipt_amount'] or ''
+    # 使用积分宝付款的金额
+    reqdata['point_amount'] = alipay_data['point_amount'] or ''
+    # 交易支付时间
+    reqdata['gmt_payment'] = alipay_data['gmt_payment'] or ''
+
+    buf['head'] = head
+    buf['reqdata'] = reqdata
+
+    # 发送交易
+    print('要发送的报文为【%s】' % buf)
+    call_jy_reply('JRZX_S', json.dumps(buf).encode('utf-8'))
+
+    return 'success'
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9999)
