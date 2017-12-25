@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>峰松收银台</title>
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../static/wap/phone.css">
+    <script src="../static/wap/jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function (){
+            // 交易结果
+            var code = {{ data.message_code }};
+
+            if(code == '000000') {
+                // 交易成功
+                $("#a").addClass("hide")
+            } else {
+                // 交易失败
+                $("#b").addClass("hide")
+                $("#c").addClass("hide")
+                $("#d").addClass("hide")
+                $("#e").addClass("hide")
+                $("#f").addClass("hide")
+            }
+
+            $(".btn-wrapper").click(function() {
+                window.location.href = "http://www.ntoccex.com:9999/wap?token=" + uuid();
+            });
+
+            function uuid() {
+                var s = [];
+                var hexDigits = "0123456789abcdef";
+                for (var i = 0; i < 36; i++) {
+                    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+                }
+                s[14] = "4";
+                s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+                s[8] = s[13] = s[18] = s[23];
+ 
+                var uuid = s.join("");
+                return uuid;
+            }
+        });
+    </script>
+
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <p class="dn title_android" id="title_tips" style="display: block;">支付结果</p>
+        </div>
+    
+        <div class="container">
+            <div class="order-list-wrapper" style="position:relative">
+                <div class="order-list-block">
+                    <div class="order-list" id="orderList" style="margin-top: 0px;">
+                        <p class="order-item"><label>交易结果</label><span style="color:#FF7000">{{ data.status }}</span></p>
+                        <p id="a" class="order-item"><label>失败原因</label><span style="color:#fc0202;">{{ data.message_desc }}</span></p>
+                        <p id="b" class="order-item"><label>订单金额</label><span style="color:#FF7000">{{ data.amt }}</span> 元</p>
+                        <p id="c" class="order-item"><label>商户名称</label><span>泰安市峰松电子科技有限公司</span></p>
+                        <p id="d" class="order-item"><label>交易日期</label><span>{{ data.order_date }}</span></p>
+                        <p id="e" class="order-item"><label>订单编号</label><span>{{ data.order_id }}</span></p>
+                        <p id="f" class="order-item"><label>收单机构</label><span>山东高速信联支付有限公司</span></p>
+                    </div>
+                    <div class="btn-wrapper">
+                        <div class="up-btn next cardbin"><a>返&nbsp;&nbsp;&nbsp;&nbsp;回</a></div>
+                    </div>
+                    <div style="text-align: center;font-size: 15px;padding-bottom: 8px;">
+                        <a>鲁ICP备17037673号-1</a>
+                    </div>
+                </div>
+            </div>
+    
+    
+        </div>
+        <div class="loading-block hide">
+            <p style="position:absolute;top:30%;color:#FFFFFF;z-index:9999;left:0;right:0;text-align:center"><i class="logobg"></i></p>
+            <p style="position:absolute;top:45%;color:#FFFFFF;z-index:9999;left:0;right:0;text-align:center"><i class="quan"></i>加载中，请稍候</p>
+        </div>
+    </div>
+</body>
+</html>
