@@ -145,7 +145,7 @@ def xlpay_notify():
 @app.route('/capli', methods=['POST'])
 def cpali_notify():
     """
-    # 二维码异步支付通知.
+    # 长安保险支付完成后，二维码异步支付通知.
     """
     from ops.trans.des3 import decrypt
     from ops.trans.wlutils import get_3des_key
@@ -239,6 +239,23 @@ def alipay_notify():
     call_jy_reply('JRZX_S', json.dumps(buf).encode('utf-8'))
 
     return 'success'
+
+
+@app.route('/capli/xlpayindex', methods=['GET'])
+def capli_xlpayindex():
+    """
+    # 长安保险信联支付保费页面.
+    """
+    return render_template('caplipay.html')
+
+
+@app.route('/capli/xlpaynotify', methods=['POST'])
+def capli_xlpaynotify():
+    """
+    # 长安保险信联支付保费页面.
+    """
+
+    return '00'
 
 
 if __name__ == '__main__':
